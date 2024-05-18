@@ -42,7 +42,7 @@ func main() {
 
 	scheduler := scheduler.NewScheduler(services)
 
-	err = scheduler.AddProcessEmail("*/1 * * * * *")
+	err = scheduler.AddProcessEmail("0 0 0 * * *")
 
 	if err != nil {
 		fmt.Println("Error adding cron job:", err)
