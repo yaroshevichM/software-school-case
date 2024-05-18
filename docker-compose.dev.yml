@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+    postgres:
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: admin
+            POSTGRES_DB: sescase
+        ports:
+            - "5432:5432"
+        networks:
+            - mynet
+
+    migration:
+        image: migrate/migrate
+        volumes:
+            - ./schema:/migrations
+        command: ["-path", "/migrations", "-database", "postgres://postgres:admin@postgres:5432/sescase?sslmode=disable", "up"]
+        depends_on:
+            - postgres
+        networks:
+            - mynet
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
+        depends_on:
+            - postgres
+        env_file:
+            - .env
+        volumes:
+            - .:/app
+        networks:
+            - mynet
+
+volumes:
+    dbdata:
+
+networks:
+    mynet:
+        driver: bridge
